@@ -1,0 +1,35 @@
+name: Feature
+description: Request or track a new capability
+title: "[Feature] "
+labels: ["type:feature"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What and why?
+      placeholder: One paragraph user story or capability summary
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: Concrete, testable outcomes
+      placeholder: |
+        - [ ] …
+        - [ ] …
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options: [prio:P0, prio:P1, prio:P2]
+    validations:
+      required: false
+  - type: dropdown
+    id: size
+    attributes:
+      label: Size
+      options: [size:XS, size:S, size:M, size:L]
