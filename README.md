@@ -23,14 +23,14 @@ The system consists of multiple services that work together to generate personal
 ## **Documentation**
 
 For detailed specifications, workflows, and design decisions, see the **Confluence Project**:  
-[📄 Hello Microverse – Confluence](https://confluence.example.com/display/HELLOMICROVERSE)
+[📄 Hello Microverse – Confluence](https://alexanderstheg.atlassian.net/wiki/x/YAEGAg)
 
 ---
 
 ## **Project Management**
 
 All epics, user stories, and tasks are tracked in **Jira**:  
-[🎫 Hello Microverse – Jira Board](https://jira.example.com/projects/HELLOMICROVERSE)
+[🎫 Hello Microverse – Jira Board](https://alexanderstheg.atlassian.net/jira/software/c/projects/HM/boards/67?atlOrigin=eyJpIjoiYjRkZmYxYTlhZGZiNDZiMDg0MjliMDUxYjZiNmUwOWEiLCJwIjoiaiJ9)
 
 ---
 
