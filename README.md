@@ -9,14 +9,7 @@ The goal of this project is to **practice designing, building, and deploying** a
 
 The system consists of multiple services that work together to generate personalized greetings for users:
 
-- **Identity Service** → Manages user profiles and language preferences.
-- **Template Service** → Manages greeting templates.
-- **Greeting Store** → Stores generated greetings.
-- **Greeter Orchestrator** → Coordinates the greeting generation workflow.
-- **Translator Service (Stub)** → Simulates a flaky external API for translation.
-- **Notifier Service** → Simulates notifications when greetings are generated.
-- **Audit Service** → Logs system events.
-- **API Gateway** → Single entry point for API requests and authentication.
+TBD
 
 ---
 
@@ -42,46 +35,23 @@ All epics, user stories, and tasks are tracked in **Jira**:
 - [Make](https://www.gnu.org/software/make/)
 
 ### **Local Development**
-```bash
-# Start services and dependencies
-make up
 
-# Run database migrations
-make migrate
-
-# Seed initial data (optional)
-make seed
-
-# Run tests
-make test
-````
-
-The API Gateway will be available at:
-`http://localhost:8080`
+TBD
 
 ---
 
 ## **Service Status**
 
-| Service          | Port | Description                  |
-| ---------------- | ---- | ---------------------------- |
-| API Gateway      | 8080 | Entry point for API requests |
-| Identity Service | 8081 | Manages user profiles        |
-| Template Service | 8082 | Manages greeting templates   |
-| Greeting Store   | 8083 | Stores generated greetings   |
-| Orchestrator     | 8084 | Handles greeting requests    |
-| Translator Stub  | 8085 | Simulates translations       |
-| Notifier         | 8086 | Simulates notifications      |
-| Audit            | 8087 | Logs system events           |
+TBD
 
 ---
 
 ## **Contributing**
 
-1. Create a new branch from `main`
+1. Create a new branch from `dev`
 2. Follow the commit message convention:
-   `feature/<service-name>-<short-description>`
-   Example: `feature/orchestrator-add-idempotency`
+   `<Jira-ticket>-<short-description>`
+   Example: `HM-123-orchestrator-add-idempotency`
 3. Submit a PR for review before merging.
 
 ---
