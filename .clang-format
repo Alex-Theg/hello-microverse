@@ -1,0 +1,26 @@
+BasedOnStyle: Google
+IndentWidth: 2
+TabWidth: 2
+UseTab: Never
+ColumnLimit: 100
+
+# Include sorting and namespaces
+SortIncludes: true
+IncludeBlocks: Preserve
+NamespaceIndentation: None
+
+# Allow short inline functions on one line
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+
+# Enforce consistent pointer alignment (* next to type)
+PointerAlignment: Left
+
+# Brace placement for functions, classes, namespaces
+BreakBeforeBraces: Attach
+
+# Prefer modern C++ rules
+DerivePointerAlignment: false
+Cpp11BracedListStyle: true
+Standard: c++20

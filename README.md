@@ -36,7 +36,16 @@ All epics, user stories, and tasks are tracked in **Jira**:
 
 ### **Local Development**
 
-TBD
+```
+cmake -B build -S .
+cmake --build build -j
+
+./build/gateway/api-gateway
+./build/services/greeter/greeter
+./build/services/identity/identity
+./build/services/preferences/preferences
+./build/services/audit/audit
+```
 
 ---
 
