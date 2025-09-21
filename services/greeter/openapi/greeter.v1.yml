@@ -1,0 +1,140 @@
+openapi: 3.0.3
+info:
+  title: Greeter Service API
+  description: |
+    The Greeter service provides personalized greeting generation functionality.
+    It creates custom greetings for users based on their preferences and context.
+  version: 1.0.0
+  contact:
+    name: Hello Microverse Team
+    email: support@hellomicroverse.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8081
+    description: Local development server
+  - url: https://api.hellomicroverse.com/greeter
+    description: Production server
+
+paths:
+  /healthz:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the greeter service
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "OK"
+
+  /greetings:
+    get:
+      summary: Get general greeting
+      description: Returns a general greeting message from the greeter service
+      operationId: getGeneralGreeting
+      tags:
+        - Greetings
+      responses:
+        '200':
+          description: Successful greeting response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Hello from Greeter service!"
+                  service:
+                    type: string
+                    example: "greeter"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                required:
+                  - message
+                  - service
+                  - version
+
+  /greetings/{id}:
+    get:
+      summary: Get personalized greeting
+      description: Returns a personalized greeting message for a specific user or entity
+      operationId: getPersonalizedGreeting
+      tags:
+        - Greetings
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier for the greeting recipient
+          schema:
+            type: string
+            example: "World"
+      responses:
+        '200':
+          description: Successful personalized greeting response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "World"
+                  message:
+                    type: string
+                    example: "Hello, World!"
+                  service:
+                    type: string
+                    example: "greeter"
+                required:
+                  - id
+                  - message
+                  - service
+        '404':
+          description: Greeting not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        code:
+          type: integer
+          description: Error code
+        service:
+          type: string
+          description: Service that generated the error
+      required:
+        - error
+        - service
+
+  responses:
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+tags:
+  - name: Health
+    description: Health check operations
+  - name: Greetings
+    description: Greeting generation operations

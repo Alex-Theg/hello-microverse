@@ -1,0 +1,295 @@
+openapi: 3.0.3
+info:
+  title: Preferences Service API
+  description: |
+    The Preferences service manages user preferences and settings.
+    It handles user customization options, notification preferences, and personalization settings.
+  version: 1.0.0
+  contact:
+    name: Hello Microverse Team
+    email: support@hellomicroverse.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8083
+    description: Local development server
+  - url: https://api.hellomicroverse.com/preferences
+    description: Production server
+
+paths:
+  /healthz:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the preferences service
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "OK"
+
+  /preferences:
+    get:
+      summary: Get all preferences
+      description: Returns general information about the preferences service
+      operationId: getAllPreferences
+      tags:
+        - Preferences
+      responses:
+        '200':
+          description: Service information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Preferences service is running"
+                  service:
+                    type: string
+                    example: "preferences"
+                  version:
+                    type: string
+                    example: "1.0.0"
+
+  /preferences/{userId}:
+    get:
+      summary: Get user preferences
+      description: Retrieve all preferences for a specific user
+      operationId: getUserPreferences
+      tags:
+        - Preferences
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: Unique identifier for the user
+          schema:
+            type: string
+            example: "user_123456"
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User preferences retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    example: "user_123456"
+                  preferences:
+                    type: object
+                    properties:
+                      language:
+                        type: string
+                        example: "en"
+                        description: User's preferred language
+                      timezone:
+                        type: string
+                        example: "UTC"
+                        description: User's timezone
+                      notifications:
+                        type: boolean
+                        example: true
+                        description: Whether user wants notifications
+                      theme:
+                        type: string
+                        example: "dark"
+                        enum: ["light", "dark", "auto"]
+                        description: UI theme preference
+                      email_frequency:
+                        type: string
+                        example: "daily"
+                        enum: ["immediate", "daily", "weekly", "never"]
+                        description: Email notification frequency
+                  service:
+                    type: string
+                    example: "preferences"
+                  version:
+                    type: string
+                    example: "1.0.0"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update user preferences
+      description: Update preferences for a specific user
+      operationId: updateUserPreferences
+      tags:
+        - Preferences
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: Unique identifier for the user
+          schema:
+            type: string
+            example: "user_123456"
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                language:
+                  type: string
+                  example: "en"
+                  description: User's preferred language
+                timezone:
+                  type: string
+                  example: "UTC"
+                  description: User's timezone
+                notifications:
+                  type: boolean
+                  example: true
+                  description: Whether user wants notifications
+                theme:
+                  type: string
+                  example: "dark"
+                  enum: ["light", "dark", "auto"]
+                  description: UI theme preference
+                email_frequency:
+                  type: string
+                  example: "daily"
+                  enum: ["immediate", "daily", "weekly", "never"]
+                  description: Email notification frequency
+      responses:
+        '200':
+          description: Preferences updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    example: "user_123456"
+                  message:
+                    type: string
+                    example: "Preferences updated successfully"
+                  service:
+                    type: string
+                    example: "preferences"
+                  updated_preferences:
+                    type: object
+                    properties:
+                      language:
+                        type: string
+                      timezone:
+                        type: string
+                      notifications:
+                        type: boolean
+                      theme:
+                        type: string
+                      email_frequency:
+                        type: string
+        '400':
+          description: Bad request - invalid preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        code:
+          type: integer
+          description: Error code
+        service:
+          type: string
+          description: Service that generated the error
+      required:
+        - error
+        - service
+
+    UserPreferences:
+      type: object
+      properties:
+        language:
+          type: string
+          description: User's preferred language (ISO 639-1 code)
+          example: "en"
+        timezone:
+          type: string
+          description: User's timezone (IANA timezone identifier)
+          example: "UTC"
+        notifications:
+          type: boolean
+          description: Whether user wants notifications
+          example: true
+        theme:
+          type: string
+          enum: ["light", "dark", "auto"]
+          description: UI theme preference
+          example: "dark"
+        email_frequency:
+          type: string
+          enum: ["immediate", "daily", "weekly", "never"]
+          description: Email notification frequency
+          example: "daily"
+      required:
+        - language
+        - timezone
+        - notifications
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+tags:
+  - name: Health
+    description: Health check operations
+  - name: Preferences
+    description: User preferences and settings management

@@ -1,0 +1,425 @@
+openapi: 3.0.3
+info:
+  title: Audit Service API
+  description: |
+    The Audit service provides comprehensive logging and audit trail functionality.
+    It captures, stores, and retrieves audit events for compliance and monitoring purposes.
+  version: 1.0.0
+  contact:
+    name: Hello Microverse Team
+    email: support@hellomicroverse.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8084
+    description: Local development server
+  - url: https://api.hellomicroverse.com/audit
+    description: Production server
+
+paths:
+  /healthz:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the audit service
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "OK"
+
+  /audit/logs:
+    get:
+      summary: Get all audit logs
+      description: Retrieve all audit logs with optional filtering and pagination
+      operationId: getAllAuditLogs
+      tags:
+        - Audit Logs
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of logs to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+        - name: offset
+          in: query
+          description: Number of logs to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: start_date
+          in: query
+          description: Start date for filtering logs (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: end_date
+          in: query
+          description: End date for filtering logs (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: event_type
+          in: query
+          description: Filter by event type
+          schema:
+            type: string
+            enum: ["user_login", "user_logout", "greeting_created", "preferences_updated", "api_call"]
+      responses:
+        '200':
+          description: Audit logs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Audit logs endpoint - not implemented yet"
+                  service:
+                    type: string
+                    example: "audit"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  logs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuditLog'
+                  pagination:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        description: Total number of logs
+                      limit:
+                        type: integer
+                        description: Number of logs per page
+                      offset:
+                        type: integer
+                        description: Number of logs skipped
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /audit/logs/{userId}:
+    get:
+      summary: Get user audit logs
+      description: Retrieve audit logs for a specific user
+      operationId: getUserAuditLogs
+      tags:
+        - Audit Logs
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: Unique identifier for the user
+          schema:
+            type: string
+            example: "user_123456"
+        - name: limit
+          in: query
+          description: Maximum number of logs to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+        - name: offset
+          in: query
+          description: Number of logs to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: start_date
+          in: query
+          description: Start date for filtering logs (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: end_date
+          in: query
+          description: End date for filtering logs (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: User audit logs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    example: "user_123456"
+                  message:
+                    type: string
+                    example: "User audit logs endpoint - not implemented yet"
+                  service:
+                    type: string
+                    example: "audit"
+                  logs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuditLog'
+                  pagination:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      limit:
+                        type: integer
+                      offset:
+                        type: integer
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /audit/events:
+    post:
+      summary: Log audit event
+      description: Create a new audit event log entry
+      operationId: logAuditEvent
+      tags:
+        - Audit Events
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_type:
+                  type: string
+                  enum: ["user_login", "user_logout", "greeting_created", "preferences_updated", "api_call"]
+                  description: Type of event being logged
+                user_id:
+                  type: string
+                  description: ID of the user who triggered the event
+                service:
+                  type: string
+                  description: Service that generated the event
+                action:
+                  type: string
+                  description: Specific action performed
+                resource:
+                  type: string
+                  description: Resource affected by the action
+                metadata:
+                  type: object
+                  description: Additional event metadata
+                  additionalProperties: true
+                ip_address:
+                  type: string
+                  format: ipv4
+                  description: IP address of the client
+                user_agent:
+                  type: string
+                  description: User agent string
+              required:
+                - event_type
+                - service
+                - action
+      responses:
+        '201':
+          description: Audit event logged successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Event logged successfully"
+                  service:
+                    type: string
+                    example: "audit"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  event_id:
+                    type: string
+                    example: "event_789012"
+                  timestamp:
+                    type: string
+                    format: date-time
+        '400':
+          description: Bad request - invalid event data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        code:
+          type: integer
+          description: Error code
+        service:
+          type: string
+          description: Service that generated the error
+      required:
+        - error
+        - service
+
+    AuditLog:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique audit log identifier
+          example: "log_123456"
+        event_type:
+          type: string
+          enum: ["user_login", "user_logout", "greeting_created", "preferences_updated", "api_call"]
+          description: Type of event
+        user_id:
+          type: string
+          description: ID of the user who triggered the event
+          example: "user_123456"
+        service:
+          type: string
+          description: Service that generated the event
+          example: "greeter"
+        action:
+          type: string
+          description: Specific action performed
+          example: "greeting_created"
+        resource:
+          type: string
+          description: Resource affected by the action
+          example: "/greetings/123"
+        metadata:
+          type: object
+          description: Additional event metadata
+          additionalProperties: true
+        ip_address:
+          type: string
+          format: ipv4
+          description: IP address of the client
+        user_agent:
+          type: string
+          description: User agent string
+        timestamp:
+          type: string
+          format: date-time
+          description: When the event occurred
+      required:
+        - id
+        - event_type
+        - service
+        - action
+        - timestamp
+
+    AuditEvent:
+      type: object
+      properties:
+        event_type:
+          type: string
+          enum: ["user_login", "user_logout", "greeting_created", "preferences_updated", "api_call"]
+          description: Type of event being logged
+        user_id:
+          type: string
+          description: ID of the user who triggered the event
+        service:
+          type: string
+          description: Service that generated the event
+        action:
+          type: string
+          description: Specific action performed
+        resource:
+          type: string
+          description: Resource affected by the action
+        metadata:
+          type: object
+          description: Additional event metadata
+          additionalProperties: true
+        ip_address:
+          type: string
+          format: ipv4
+          description: IP address of the client
+        user_agent:
+          type: string
+          description: User agent string
+      required:
+        - event_type
+        - service
+        - action
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+tags:
+  - name: Health
+    description: Health check operations
+  - name: Audit Logs
+    description: Audit log retrieval and querying
+  - name: Audit Events
+    description: Audit event logging and creation
