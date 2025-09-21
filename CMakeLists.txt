@@ -81,3 +81,61 @@ add_custom_target(help-services
     COMMAND ${CMAKE_COMMAND} -E echo "  cmake --build . --target test-services"
     COMMENT "Available service targets"
 )
+
+# OpenAPI Code-First Generation
+# Add include directory for shared headers
+target_include_directories(greeter PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(identity PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(preferences PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(audit PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(gateway PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+# Create OpenAPI generator tool
+add_executable(openapi_generator tools/openapi_generator.cpp include/openapi_annotations.cpp)
+target_include_directories(openapi_generator PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(openapi_generator 
+    nlohmann_json::nlohmann_json
+    spdlog::spdlog
+)
+
+# OpenAPI generation targets
+add_custom_target(generate-openapi-greeter
+    COMMAND ${CMAKE_BINARY_DIR}/openapi_generator greeter ${CMAKE_SOURCE_DIR}/services/greeter/openapi/greeter.v1.yml ${CMAKE_SOURCE_DIR}/services/greeter/src/main.cpp
+    DEPENDS openapi_generator
+    COMMENT "Generating OpenAPI spec for greeter service"
+)
+
+add_custom_target(generate-openapi-identity
+    COMMAND ${CMAKE_BINARY_DIR}/openapi_generator identity ${CMAKE_SOURCE_DIR}/services/identity/openapi/identity.v1.yml ${CMAKE_SOURCE_DIR}/services/identity/src/main.cpp
+    DEPENDS openapi_generator
+    COMMENT "Generating OpenAPI spec for identity service"
+)
+
+add_custom_target(generate-openapi-preferences
+    COMMAND ${CMAKE_BINARY_DIR}/openapi_generator preferences ${CMAKE_SOURCE_DIR}/services/preferences/openapi/preferences.v1.yml ${CMAKE_SOURCE_DIR}/services/preferences/src/main.cpp
+    DEPENDS openapi_generator
+    COMMENT "Generating OpenAPI spec for preferences service"
+)
+
+add_custom_target(generate-openapi-audit
+    COMMAND ${CMAKE_BINARY_DIR}/openapi_generator audit ${CMAKE_SOURCE_DIR}/services/audit/openapi/audit.v1.yml ${CMAKE_SOURCE_DIR}/services/audit/src/main.cpp
+    DEPENDS openapi_generator
+    COMMENT "Generating OpenAPI spec for audit service"
+)
+
+# Generate all OpenAPI specs
+add_custom_target(generate-openapi-all
+    DEPENDS generate-openapi-greeter generate-openapi-identity generate-openapi-preferences generate-openapi-audit
+    COMMENT "Generating all OpenAPI specifications"
+)
+
+# Update help target
+add_custom_target(help-openapi
+    COMMAND ${CMAKE_COMMAND} -E echo "OpenAPI generation targets:"
+    COMMAND ${CMAKE_COMMAND} -E echo "  cmake --build . --target generate-openapi-all"
+    COMMAND ${CMAKE_COMMAND} -E echo "  cmake --build . --target generate-openapi-greeter"
+    COMMAND ${CMAKE_COMMAND} -E echo "  cmake --build . --target generate-openapi-identity"
+    COMMAND ${CMAKE_COMMAND} -E echo "  cmake --build . --target generate-openapi-preferences"
+    COMMAND ${CMAKE_COMMAND} -E echo "  cmake --build . --target generate-openapi-audit"
+    COMMENT "OpenAPI generation targets"
+)
