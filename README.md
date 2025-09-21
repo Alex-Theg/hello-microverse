@@ -30,21 +30,52 @@ All epics, user stories, and tasks are tracked in **Jira**:
 ## **Getting Started**
 
 ### **Prerequisites**
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/)
-- [Make](https://www.gnu.org/software/make/)
+- [CMake](https://cmake.org/) (version 3.16 or higher)
+- [C++20 compatible compiler](https://en.cppreference.com/w/cpp/compiler_support) (GCC, Clang, or MSVC)
+- [Docker](https://docs.docker.com/get-docker/) (for containerized deployment)
+- [Docker Compose](https://docs.docker.com/compose/) (for multi-service deployment)
 
 ### **Local Development**
 
-```
+**Quick Start:**
+```bash
+# Build and run services using CMake targets
 cmake -B build -S .
-cmake --build build -j
+cmake --build build --target run          # Run API Gateway (default)
+cmake --build build --target run-greeter  # Run Greeter service
+cmake --build build --target run-identity # Run Identity service
+cmake --build build --target run-preferences # Run Preferences service
+cmake --build build --target run-audit    # Run Audit service
+```
 
-./build/gateway/api-gateway
+**Available CMake Targets:**
+```bash
+cmake --build build --target help-services  # Show all available targets
+cmake --build build --target test-services  # Show health check endpoints
+```
+
+**Manual Execution:**
+```bash
+# After building, run executables directly
+./build/gateway/gateway
 ./build/services/greeter/greeter
 ./build/services/identity/identity
 ./build/services/preferences/preferences
 ./build/services/audit/audit
+```
+
+**Service Endpoints:**
+- Gateway: http://localhost:8080
+- Greeter: http://localhost:8081
+- Identity: http://localhost:8082
+- Preferences: http://localhost:8083
+- Audit: http://localhost:8084
+
+**Test Commands:**
+```bash
+curl http://localhost:8081/greetings  # Test greeter service
+curl http://localhost:8080/healthz    # Test gateway health
+curl http://localhost:8081/healthz    # Test greeter health
 ```
 
 ---
